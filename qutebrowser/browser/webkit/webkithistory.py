@@ -23,6 +23,7 @@ import functools
 
 from PyQt5.QtWebKit import QWebHistoryInterface
 
+from qutebrowser.config import config
 from qutebrowser.utils import debug
 from qutebrowser.misc import debugcachestats
 
@@ -54,6 +55,8 @@ class WebHistoryInterface(QWebHistoryInterface):
         Return:
             True if the url is in the history, False otherwise.
         """
+        if config.val.content.hyperlink_no_history:
+            return False
         with debug.log_time('sql', 'historyContains'):
             return url_string in self._history
 

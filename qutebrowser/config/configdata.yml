@@ -865,6 +865,14 @@ content.hyperlink_auditing:
   supports_pattern: true
   desc: Enable hyperlink auditing (`<a ping>`).
 
+content.hyperlink_no_history:
+  type: Bool
+  default: false
+  desc: >-
+    Don't check if a hyperlink is in the browser's history. Display the link
+    as if it is not in the history. This is intended as an optimization for
+    slow systems. This option is only valid when using QtWebKit.
+
 content.images:
   default: true
   type: Bool
