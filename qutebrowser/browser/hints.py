@@ -87,12 +87,10 @@ class HintLabel(QLabel):
     """
 
     def __init__(self, elem: webelem.AbstractWebElement,
-                 context: 'HintContext') -> None:
+                 context: 'HintContext', initial: str) -> None:
         super().__init__(parent=context.tab)
         self._context = context
         self.elem = elem
-
-        self.setTextFormat(Qt.RichText)
 
         # Make sure we can style the background via a style sheet, and we don't
         # get any extra text indent from Qt.
@@ -101,6 +99,8 @@ class HintLabel(QLabel):
         self.setIndent(0)
 
         self._context.tab.contents_size_changed.connect(self._move_to_elem)
+
+        self.update_text('', initial)
         self._move_to_elem()
         self.show()
 
@@ -649,11 +649,13 @@ class HintManager(QObject):
         strings = self._hint_strings(elems)
         log.hints.debug("hints: {}".format(', '.join(strings)))
 
-        for elem, string in zip(elems, strings):
-            label = HintLabel(elem, self._context)
-            label.update_text('', string)
-            self._context.all_labels.append(label)
+        labels = [HintLabel(elem, self._context, string)
+                    for elem, string in zip(elems, strings)]
+
+        for string, label in zip(strings, labels):
             self._context.labels[string] = label
+
+        self._context.all_labels = labels
 
         keyparser = self._get_keyparser(usertypes.KeyMode.hint)
         assert isinstance(keyparser, modeparsers.HintKeyParser), keyparser
